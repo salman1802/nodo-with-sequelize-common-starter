@@ -24,5 +24,4 @@ module.exports.PLATFORM = Object.freeze({
   IOS: "iOS",
 });
 
-module.exports.STRIPE_KEY =
-  process.env.STRIPE_KEY || "sk_test_fnKNOaE4JdDYcMSsDlPMHg1G";
+module.exports.STRIPE_KEY =process.env.STRIPE_KEY ;
