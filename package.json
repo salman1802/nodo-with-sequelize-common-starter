@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon --exec babel-node app.js",
-    "start:dev": "pm2 start --interpreter babel-node app.js -n real-estate-6001",
-    "dev:reload": "pm2 reload real-estate-6001"
+    "start:dev": "pm2 start --interpreter babel-node app.js -n ci-cd-demo-3000",
+    "dev:reload": "pm2 reload ci-cd-demo-3000"
   },
   "author": "",
   "license": "ISC",
