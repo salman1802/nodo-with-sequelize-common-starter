@@ -26,7 +26,28 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
+    - run: npm i
     - run: |
             touch .env
             echo "${{ secrets.PROD_ENV_FILE }}" > .env
+    
+    - name: Check if process is running
+      id: check_process
+      run: |
+        if pm2 list | grep -q "ci-cd-demo-3000"; then
+          echo "Process is running"
+          echo "is_running=true" >> $GITHUB_OUTPUT
+        else
+          echo "Process is not running"
+          echo "is_running=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Start or reload process
+      run: |
+        if [ "${{ steps.check_process.outputs.is_running }}" = "true" ]; then
+          npm run dev:reload
+        else
+          npm run start:dev
+        fi
+    # - run: npm run start:dev
+    # - run: npm run dev:reload
