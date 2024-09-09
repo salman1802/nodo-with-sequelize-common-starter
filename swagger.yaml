@@ -1,0 +1,457 @@
+openapi: 3.0.0
+
+info:
+  title: API Title
+  description: OpenAPI specification 
+  version: 1.0.0
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: integer
+          example: 64cc83da7bce0189c6a3dd45
+        firstname:
+          type: string
+          example: Priya
+        lastname:
+          type: string
+          example: Varde
+        email:
+          type: string
+        countrycode:
+          type: string
+          example: +91
+        mobilenumber:
+          type: string
+          example: 9865257811
+        zipcode:
+          type: string
+          example: 785206
+        termsAndPolicy:
+          type: boolean
+          example: true
+  securitySchemes:
+    bearerAuth: 
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+  responses:
+    success:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: success
+
+    UnauthorizedError:
+      description: |
+        - Invalid credentials
+        - Expired access or refresh token
+        - Revoked access or refresh token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthorized
+
+    NoContent:
+      description: |
+        - Empty body content
+      content:
+        application/json:
+          schema:
+            type: object
+
+    UnprocessableEntity:
+      description: Validation errors
+      content:
+        application/json:
+          schema:
+            type: object
+
+    ConflictError :
+      description: Account already registered with given email
+      content:
+        application/json:
+          schema:
+            type: object
+
+    PreconditionFailedException:
+      description: Account does not exist
+      content:
+        application/json:
+          schema:
+            type: object
+
+    GetLoginResponse:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  _id:
+                    type: integer
+                    example: 643d4d03ae23825006d11937
+                  firstname:
+                    type: string
+                    example: Priya
+                  lastname:
+                    type: string
+                    example: Varde
+                  email:
+                    type: string
+                  countrycode:
+                    type: string
+                    example: +91
+                  mobilenumber:
+                    type: string
+                    example: 9865257811
+                  zipcode:
+                    type: string
+                    example: 785206
+                  termsAndPolicy:
+                    type: boolean
+                    example: true
+                  auth:
+                    type: object
+                    properties:
+                      tokenType:
+                        type: string
+                        example: Bearer
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo1LCJwaG9uZV9udW1iZXIiOiIrOTEgNzk5MDA1MzE3MCIsImZpcnN0X25hbWUiOiJ0ZXN0c2RzZHNkc2RzZHNkcyIsI
+                      refreshToken:
+                        type: string
+                        example: DGptc0miW9AXKCDl6H7RMMHlDcruUbPrwOowslSHiVOyYYJeFhRW1F2XKIrrfUCRIoG1lRMUfEQKSxX3TApl1Aw6641YkAGJhi6yQgr06PrZZuPFddYBvr
+                      expiresIn:
+                        type: integer
+                        example: 31536000
+paths:
+  /auth/register:
+    post:
+      description: Register user 
+      summary: Register Service
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  example: Priya
+                lastname:
+                  type: string
+                  example: Varde
+                email:
+                  type: string
+                countrycode:
+                  type: string
+                  example: +91
+                mobilenumber:
+                  type: string
+                  example: 9865257811s
+                zipcode:
+                  type: string
+                  example: 785206
+                createpassword:
+                  type: string
+                confirmpassword:
+                  type: string
+                location : 
+                  type : string
+                  example : abc street, xyz area, pqr city.
+                lat :
+                  type : string
+                  example : 22.2356
+                long : 
+                  type : string
+                  example : 78.2356
+                termsAndPolicy:
+                  type: boolean
+                  example: true
+                profileImage :
+                  type: string
+                  format : binary
+
+           
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+  /auth/edit-email:
+    post:
+      summary: Edit email service
+      description: |
+        - Edit email service
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email      
+              required:
+                - email
+   
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+  
+
+  /auth/verify-otp:
+    post:
+      summary: Email OTP verification
+      description: |
+        - Email OTP verification
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                otp:
+                  type: integer
+                  example: 2356          
+              required:
+                - email
+                - otp
+   
+
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+  /auth/resend-otp:
+    post:
+      summary: Resend OTP Service
+      description: |
+        - Resend OTP Service
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email      
+              required:
+                - email
+   
+
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /auth/login:
+    post:
+      description: Login
+      summary: Login Service
+      tags:
+        - Auth
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /auth/logout:
+    get:
+      summary: Logout Users
+      description: |
+        - logout Users from this device.
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+
+  /user/forgot-password:
+    post:
+      summary: Forgot password
+      description: |
+        - forgot password
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+                - email
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+  /user/profile:
+    put:
+      description: Edit user or tasker profile  |
+                    Language [1 => English, 2=> Serbian]
+      summary: Edit user or tasker profile
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  example: Priya
+                lastname:
+                  type: string
+                  example: Varde
+                email:
+                  type: string
+                countrycode:
+                  type: string
+                  example: +91
+                mobilenumber:
+                  type: string
+                  example: 9865257811
+                zipcode:
+                  type: string
+                  example: 785206
+                location : 
+                  type : string
+                  example : abc street, xyz area, pqr city.
+                lat :
+                  type : string
+                  example : 22.2356
+                long : 
+                  type : string
+                  example : 78.2356
+                profileImage : 
+                  type: string
+                  format: binary
+            
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
+    get:
+      description: Get user profile
+                   
+      summary: Get user profile 
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+     
+
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "412":
+          $ref: "#/components/responses/PreconditionFailedException"
